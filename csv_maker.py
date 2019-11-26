@@ -35,7 +35,7 @@ def getVideo(index):
     diff_array = np.zeros((diff, 224, 224, 1)).astype(float)
     diff_tensor = torch.tensor(diff_array)
     final = torch.cat([vtensor, diff_tensor])
-    torch.save(final, 'video.pt')
+    return final
 '''
  # T = number of frames
  # M = height
@@ -54,7 +54,7 @@ def getAudio(index):
     transformed = torchaudio.transforms.Resample(sample_rate, new_sample_rate)(waveform)
     audioPadded = torch.cat([transformed, torch.zeros(2,73920-transformed.shape[1])],dim=1)
     specgram = torchaudio.transforms.Spectrogram()(audioPadded)
-    torch.save(specgram, 'audio.pt')
+    return specgram
 
 
   #allAudios.append(specgram)
@@ -70,11 +70,16 @@ def getLabel(index):
 '''
 The Loop
 '''
-
+allAudios = []
+allVideos = []
+allLabels = []
 for i in range(0,3):
-  getVideo(i)
-  getAudio(i)
-  getLabel(i)
+  allVideos.append(getVideo(i))
+  allAudios.append(getAudio(i))
+  allLabels.append(getLabel(i))
+
+torch.save(final, 'video.pt')
+torch.save(specgram, 'audio.pt')
 
 '''
 To check
