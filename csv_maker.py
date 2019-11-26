@@ -35,7 +35,7 @@ def getVideo(index):
     diff_array = np.zeros((diff, 224, 224, 1)).astype(float)
     diff_tensor = torch.tensor(diff_array)
     final = torch.cat([vtensor, diff_tensor])
-    return final
+    torch.save(final, 'video.pt')
 '''
  # T = number of frames
  # M = height
@@ -43,37 +43,6 @@ def getVideo(index):
  # C = depth (grayscale)
  '''
 
-
-#allVideos = [shapemaker(i) for i in mp4List[0:3]]
-
-
-'''
-for i in range(len([1, 2, 3])):
-  file = mp4List[i]
-  print(file)
-  channels = 3
-  cap = cv2.VideoCapture(file)
-  print(cap)
-  nFrames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-  width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-  height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-  print(nFrames)
-  print(width)
-  print(height)
-
-  # This is not good!
-  frames = torch.FloatTensor(channels, nFrames, width, height)
-  print(frames)
-
-# concatenate frames and zero matrix.
-  framesPadded = torch.cat([frames, torch.zeros(channels,114-nFrames,width,height)],dim=1)
-# you probably want to downsample this, otherwise the dataset will be huge
-  framesSmall = F.interpolate(framesPadded,size=[64,64])
-  #print(framesSmall)
-  allVideos.append(framesSmall)
-'''
-
-#allAudios = []
 '''
 Padding figure = 73920
 '''
@@ -85,7 +54,7 @@ def getAudio(index):
     transformed = torchaudio.transforms.Resample(sample_rate, new_sample_rate)(waveform)
     audioPadded = torch.cat([transformed, torch.zeros(2,73920-transformed.shape[1])],dim=1)
     specgram = torchaudio.transforms.Spectrogram()(audioPadded)
-    return specgram
+    torch.save(specgram, 'audio.pt')
 
 
   #allAudios.append(specgram)
@@ -97,27 +66,18 @@ def getLabel(index):
     label = open(filename, "r").read().split()[1:-2])
     return label
 
+
 '''
-exporting
-
-import csv
-
-with open('employee_file2.csv', mode='w') as csv_file:
-    fieldnames = ['emp_name', 'dept', 'birth_month']
-    writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-
-    writer.writeheader()
-    writer.writerow({'emp_name': 'John Smith', 'dept': 'Accounting', 'birth_month': 'November'})
-    writer.writerow({'emp_name': 'Erica Meyers', 'dept': 'IT', 'birth_month': 'March'})
+The Loop
 '''
 
-with open('1125.csv', mode='w') as csv_file:
-    fieldnames = ['video', 'audio', 'label']
-    writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+for i in range(0,3):
+  getVideo(i)
+  getAudio(i)
+  getLabel(i)
 
-    writer.writeheader()
-    for i in range(0,3):
-        writer.writerow({'video': getVideo(i), 'audio': getAudio(i), 'label': getLabel(i)})
-
-#df = pd.DataFrame(data={"Audio": allAudios,"Video": allVideos})
-#df.to_csv("avInput.csv", sep=',',index=False)
+'''
+To check
+'''
+test = torch.load('video.pt')
+print(test.shape)
