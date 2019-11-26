@@ -92,7 +92,7 @@ def getAudio(index):
   #plt.imshow(specgram.log2()[0,:,:].numpy(), cmap='gray')
   #print(type(specgram))
 
-def getLabel(i):
+def getLabel(index):
     filename = txtList[index]
     label = open(filename, "r").read().split()[1:-2])
     return label
